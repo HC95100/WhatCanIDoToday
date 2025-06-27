@@ -9,28 +9,78 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { CalendarIcon, Search } from "lucide-react";
+import { CalendarIcon, Search, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const eventTypes = [
   "Emploi", "Exposition", "Sport", "Culture", "Concert", "Atelier", "Conférence", "Festival", "Marché", "Autre"
 ];
 
-const SearchForm = () => {
+interface EventResult {
+  name: string;
+  description: string;
+  date: string;
+  location: string;
+  link?: string;
+}
+
+interface SearchFormProps {
+  onSearchResults: (events: EventResult[]) => void;
+  onLoadingChange: (loading: boolean) => void;
+  onErrorChange: (error: string | null) => void;
+}
+
+const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChange, onErrorChange }) => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [location, setLocation] = React.useState<string>("");
   const [eventType, setEventType] = React.useState<string>("");
   const [cost, setCost] = React.useState<string>("any");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const handleSearch = () => {
-    console.log("Recherche lancée avec :", {
-      location,
-      date: date ? format(date, "yyyy-MM-dd") : "any",
-      eventType,
-      cost,
-    });
-    // Ici, vous intégreriez la logique de recherche réelle
+  const handleSearch = async () => {
+    setIsLoading(true);
+    onLoadingChange(true);
+    onErrorChange(null);
+    onSearchResults([]); // Clear previous results
+
+    try {
+      const { data, error } = await supabase.functions.invoke('search-events', {
+        body: {
+          location,
+          date: date ? format(date, "yyyy-MM-dd") : "any",
+          eventType,
+          cost,
+        },
+      });
+
+      if (error) {
+        console.error("Error invoking Edge Function:", error);
+        toast.error("Une erreur est survenue lors de la recherche. Veuillez réessayer.");
+        onErrorChange(error.message);
+        onSearchResults([]);
+        return;
+      }
+
+      if (data) {
+        onSearchResults(data as EventResult[]);
+        toast.success("Recherche terminée avec succès !");
+      } else {
+        onSearchResults([]);
+        toast.info("Aucun événement trouvé pour votre recherche.");
+      }
+
+    } catch (err: any) {
+      console.error("Unexpected error during search:", err);
+      toast.error("Une erreur inattendue est survenue.");
+      onErrorChange(err.message || "Erreur inconnue");
+      onSearchResults([]);
+    } finally {
+      setIsLoading(false);
+      onLoadingChange(false);
+    }
   };
 
   return (
@@ -110,9 +160,18 @@ const SearchForm = () => {
           </RadioGroup>
         </div>
 
-        <Button onClick={handleSearch} className="w-full py-3 text-lg">
-          <Search className="mr-2 h-5 w-5" />
-          Rechercher
+        <Button onClick={handleSearch} className="w-full py-3 text-lg" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Recherche en cours...
+            </>
+          ) : (
+            <>
+              <Search className="mr-2 h-5 w-5" />
+              Rechercher
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>
