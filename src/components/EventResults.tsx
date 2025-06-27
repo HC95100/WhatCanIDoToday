@@ -3,7 +3,10 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Heart } from "lucide-react";
+import { useSession } from '@/integrations/supabase/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface EventResult {
   name: string;
@@ -20,6 +23,37 @@ interface EventResultsProps {
 }
 
 const EventResults: React.FC<EventResultsProps> = ({ events, loading, error }) => {
+  const { user } = useSession();
+
+  const handleAddToFavorites = async (event: EventResult) => {
+    if (!user) {
+      toast.error("Veuillez vous connecter pour ajouter des événements à vos favoris.");
+      return;
+    }
+
+    const { name, description, date, location, link } = event;
+
+    const { data, error } = await supabase
+      .from('user_favorites')
+      .insert([
+        {
+          user_id: user.id,
+          name,
+          description,
+          date,
+          location,
+          link,
+        },
+      ]);
+
+    if (error) {
+      console.error("Error adding to favorites:", error);
+      toast.error("Erreur lors de l'ajout aux favoris. Veuillez réessayer.");
+    } else {
+      toast.success("Événement ajouté à vos favoris !");
+    }
+  };
+
   if (loading) {
     return (
       <div className="w-full max-w-3xl mx-auto mt-8 p-6 text-center text-gray-600 dark:text-gray-400">
@@ -55,14 +89,20 @@ const EventResults: React.FC<EventResultsProps> = ({ events, loading, error }) =
           </CardHeader>
           <CardContent>
             <p className="text-gray-700 dark:text-gray-300 mb-3">{event.description}</p>
-            {event.link && (
-              <Button asChild variant="outline" className="mt-2">
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  En savoir plus
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
+            <div className="flex flex-wrap gap-2 justify-end">
+              {event.link && (
+                <Button asChild variant="outline">
+                  <a href={event.link} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                    En savoir plus
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
+              )}
+              <Button onClick={() => handleAddToFavorites(event)} className="flex items-center">
+                <Heart className="mr-2 h-4 w-4" />
+                Ajouter aux favoris
               </Button>
-            )}
+            </div>
           </CardContent>
         </Card>
       ))}
