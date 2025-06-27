@@ -1,0 +1,122 @@
+"use client";
+
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { CalendarIcon, Search } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+const eventTypes = [
+  "Emploi", "Exposition", "Sport", "Culture", "Concert", "Atelier", "Conférence", "Festival", "Marché", "Autre"
+];
+
+const SearchForm = () => {
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [location, setLocation] = React.useState<string>("");
+  const [eventType, setEventType] = React.useState<string>("");
+  const [cost, setCost] = React.useState<string>("any");
+
+  const handleSearch = () => {
+    console.log("Recherche lancée avec :", {
+      location,
+      date: date ? format(date, "yyyy-MM-dd") : "any",
+      eventType,
+      cost,
+    });
+    // Ici, vous intégreriez la logique de recherche réelle
+  };
+
+  return (
+    <Card className="w-full max-w-3xl mx-auto shadow-lg">
+      <CardHeader className="text-center">
+        <CardTitle className="text-3xl">Trouvez votre prochaine activité</CardTitle>
+        <CardDescription>Remplissez les champs ci-dessous pour découvrir quoi faire.</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-6">
+        <div className="grid gap-2">
+          <Label htmlFor="location">Lieu (Ville, Région, Pays)</Label>
+          <Input
+            id="location"
+            placeholder="Ex: Paris, Île-de-France, France"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="date">Date de l'événement</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : <span>Choisissez une date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="eventType">Type d'événement</Label>
+          <Select value={eventType} onValueChange={setEventType}>
+            <SelectTrigger id="eventType">
+              <SelectValue placeholder="Sélectionnez un type" />
+            </SelectTrigger>
+            <SelectContent>
+              {eventTypes.map((type) => (
+                <SelectItem key={type} value={type.toLowerCase()}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid gap-2">
+          <Label>Coût</Label>
+          <RadioGroup value={cost} onValueChange={setCost} className="flex space-x-4">
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="any" id="cost-any" />
+              <Label htmlFor="cost-any">Peu importe</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="free" id="cost-free" />
+              <Label htmlFor="cost-free">Gratuit</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="paid" id="cost-paid" />
+              <Label htmlFor="cost-paid">Payant</Label>
+            </div>
+          </RadioGroup>
+        </div>
+
+        <Button onClick={handleSearch} className="w-full py-3 text-lg">
+          <Search className="mr-2 h-5 w-5" />
+          Rechercher
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default SearchForm;
