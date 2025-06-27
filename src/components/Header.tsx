@@ -17,6 +17,10 @@ const Header = () => {
     }
   };
 
+  const handleStartButtonClick = () => {
+    navigate('/login');
+  };
+
   return (
     <header className="w-full py-6 bg-primary text-primary-foreground shadow-md">
       <div className="container mx-auto px-4 flex justify-between items-center">
@@ -28,9 +32,16 @@ const Header = () => {
             Découvrez quoi faire aujourd'hui (ou un autre jour) !
           </p>
         </div>
-        <Button onClick={handleAuthButtonClick} disabled={loading} className="ml-4">
-          {loading ? "Chargement..." : (user ? "Tableau de bord" : "Se connecter")}
-        </Button>
+        <div className="flex items-center gap-2">
+          {!user && !loading && (
+            <Button onClick={handleStartButtonClick} className="ml-4">
+              Commencer
+            </Button>
+          )}
+          <Button onClick={handleAuthButtonClick} disabled={loading} className="ml-4">
+            {loading ? "Chargement..." : (user ? "Tableau de bord" : "Se connecter")}
+          </Button>
+        </div>
       </div>
     </header>
   );
