@@ -39,7 +39,7 @@ serve(async (req) => {
     const prompt = `Trouve des événements ou activités à faire à ${location} pour la date du ${date} (ou autour de cette date si non spécifiée). Le type d'événement souhaité est "${eventType}" et le coût est "${cost}". Fournis une liste de 3-5 événements pertinents avec leur nom, une courte description, la date, le lieu précis et si possible un lien. Réponds en format JSON, comme un tableau d'objets, par exemple: [{"name": "Nom de l'événement", "description": "Description courte", "date": "Date", "location": "Lieu", "link": "URL"}]. Si aucun événement n'est trouvé, retourne un tableau vide.`;
 
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
       {
         method: 'POST',
         headers: {
