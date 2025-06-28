@@ -4,20 +4,14 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/integrations/supabase/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const navigate = useNavigate();
   const { user, loading } = useSession();
 
-  const handleAuthButtonClick = () => {
-    if (user) {
-      navigate('/dashboard');
-    } else {
-      navigate('/login');
-    }
-  };
-
-  const handleStartButtonClick = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/login');
   };
 
@@ -33,14 +27,22 @@ const Header = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {!user && !loading && (
-            <Button onClick={handleStartButtonClick} className="ml-4">
-              Commencer
+          {loading ? (
+            <Button disabled>Chargement...</Button>
+          ) : user ? (
+            <>
+              <Button onClick={() => navigate('/favorites')} variant="secondary">
+                Mes Favoris
+              </Button>
+              <Button onClick={handleLogout} variant="outline">
+                Déconnexion
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => navigate('/login')}>
+              Se connecter
             </Button>
           )}
-          <Button onClick={handleAuthButtonClick} disabled={loading} className="ml-4">
-            {loading ? "Chargement..." : (user ? "Tableau de bord" : "Se connecter")}
-          </Button>
         </div>
       </div>
     </header>
