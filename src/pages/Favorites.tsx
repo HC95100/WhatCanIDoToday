@@ -5,10 +5,11 @@ import { useSession } from '@/integrations/supabase/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, HeartCrack } from "lucide-react";
+import { ExternalLink, HeartCrack, ArrowLeft } from "lucide-react";
 import { MadeWithDyad } from '@/components/made-with-dyad';
 import Header from '@/components/Header';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface FavoriteEvent {
   id: string;
@@ -25,6 +26,7 @@ const Favorites = () => {
   const [favoriteEvents, setFavoriteEvents] = useState<FavoriteEvent[]>([]);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -89,7 +91,13 @@ const Favorites = () => {
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center">
-        <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">Mes Événements Favoris</h2>
+        <div className="w-full max-w-3xl flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Mes Événements Favoris</h2>
+          <Button onClick={() => navigate('/')} variant="outline" className="flex items-center">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Retour à la recherche
+          </Button>
+        </div>
         {error && (
           <div className="w-full max-w-3xl mx-auto mt-4 p-4 text-center text-red-600 dark:text-red-400">
             {error}
@@ -99,7 +107,7 @@ const Favorites = () => {
           <div className="w-full max-w-3xl mx-auto mt-8 p-6 text-center text-gray-600 dark:text-gray-400">
             <HeartCrack className="mx-auto h-12 w-12 mb-4" />
             <p>Vous n'avez pas encore d'événements favoris. Ajoutez-en depuis la page d'accueil !</p>
-            <Button onClick={() => window.location.href = '/'} className="mt-4">
+            <Button onClick={() => navigate('/')} className="mt-4">
               Retour à la recherche
             </Button>
           </div>
