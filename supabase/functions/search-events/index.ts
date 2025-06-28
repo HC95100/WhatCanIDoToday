@@ -66,9 +66,18 @@ serve(async (req) => {
     // Attempt to parse the text response as JSON
     let events = [];
     try {
-      // Clean up the response to ensure it's valid JSON
-      const cleanedTextResponse = textResponse.replace(/```json\n|```/g, '').trim();
-      events = JSON.parse(cleanedTextResponse);
+      // Extract content between ```json\n and ```
+      const jsonMatch = textResponse.match(/```json\n([\s\S]*?)\n```/);
+      let jsonString = textResponse;
+
+      if (jsonMatch && jsonMatch[1]) {
+        jsonString = jsonMatch[1].trim();
+      } else {
+        // If no markdown block is found, assume the entire response is JSON or needs trimming
+        jsonString = textResponse.trim();
+      }
+
+      events = JSON.parse(jsonString);
     } catch (parseError) {
       console.error('Failed to parse Gemini response as JSON:', parseError, 'Raw text:', textResponse);
       // If parsing fails, return a generic error or the raw text
