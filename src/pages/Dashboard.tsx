@@ -1,17 +1,31 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSession } from '@/integrations/supabase/auth';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer'; // Import the new Footer
+import Footer from '@/components/Footer';
+import SearchForm from "@/components/SearchForm"; // Import SearchForm
+import EventResults from "@/components/EventResults"; // Import EventResults
+
+interface EventResult {
+  name: string;
+  description: string;
+  date: string;
+  location: string;
+  link?: string;
+}
 
 const Dashboard = () => {
   const { user, loading } = useSession();
   const navigate = useNavigate();
+
+  const [events, setEvents] = useState<EventResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState<boolean>(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -27,8 +41,6 @@ const Dashboard = () => {
   }
 
   if (!user) {
-    // This case should ideally be handled by SessionContextProvider redirect,
-    // but as a fallback or for initial render before redirect.
     return null;
   }
 
@@ -36,7 +48,7 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center">
-        <Card className="w-full max-w-3xl shadow-lg text-center">
+        <Card className="w-full max-w-3xl shadow-lg text-center mb-8">
           <CardHeader>
             <CardTitle className="text-3xl">Bienvenue, {user.email} !</CardTitle>
           </CardHeader>
@@ -50,8 +62,16 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Search Form and Results */}
+        <SearchForm
+          onSearchResults={setEvents}
+          onLoadingChange={setSearchLoading}
+          onErrorChange={setSearchError}
+        />
+        <EventResults events={events} loading={searchLoading} error={searchError} />
       </main>
-      <Footer /> {/* Add the Footer here */}
+      <Footer />
     </div>
   );
 };
