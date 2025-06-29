@@ -14,10 +14,9 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea"; // Import Textarea component
 
-const eventTypes = [
-  "Emploi", "Exposition", "Sport", "Culture", "Concert", "Atelier", "Conférence", "Festival", "Marché", "Autre"
-];
+// Removed eventTypes array as it's no longer needed for a free-text input
 
 interface EventResult {
   name: string;
@@ -37,8 +36,9 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
   const [startDate, setStartDate] = React.useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
   const [location, setLocation] = React.useState<string>("");
-  const [eventType, setEventType] = React.useState<string>("");
+  const [eventType, setEventType] = React.useState<string>(""); // Now a free-text string
   const [cost, setCost] = React.useState<string>("any");
+  const [otherDetails, setOtherDetails] = React.useState<string>(""); // New state for other details
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const handleSearch = async () => {
@@ -53,8 +53,9 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
           location,
           startDate: startDate ? format(startDate, "yyyy-MM-dd") : "any",
           endDate: endDate ? format(endDate, "yyyy-MM-dd") : "any",
-          eventType,
+          eventType, // Pass the free-text event type
           cost,
+          otherDetails, // Pass the new other details
         },
       });
 
@@ -156,22 +157,25 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="eventType">Type d'événement</Label>
-          <Select
+          <Label htmlFor="eventType">Type d'événement (ex: concert, exposition, sport...)</Label>
+          <Input
+            id="eventType"
+            placeholder="Ex: concert de rock, exposition d'art moderne"
             value={eventType}
-            onValueChange={setEventType}
-          >
-            <SelectTrigger id="eventType">
-              <SelectValue placeholder="Sélectionnez un type" />
-            </SelectTrigger>
-            <SelectContent>
-              {eventTypes.map((type) => (
-                <SelectItem key={type} value={type.toLowerCase()}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            onChange={(e) => setEventType(e.target.value)}
+          />
+        </div>
+
+        {/* New field for other details */}
+        <div className="grid gap-2">
+          <Label htmlFor="otherDetails">Autres précisions (optionnel)</Label>
+          <Textarea
+            id="otherDetails"
+            placeholder="Ex: pour enfants, en plein air, avec restauration..."
+            value={otherDetails}
+            onChange={(e) => setOtherDetails(e.target.value)}
+            rows={3} // Adjust height as needed
+          />
         </div>
 
         <div className="grid gap-2">
