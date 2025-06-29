@@ -70,7 +70,7 @@ serve(async (req) => {
       }
     }
 
-    let prompt = `Trouve une liste de 5 à 10 événements ou activités à faire à ${location} ${dateClause}.`;
+    let prompt = `Donne-moi une liste complète de 5 à 10 événements publics (expositions, forums, concerts, séminaires, conférences, salons, spectacles, compétitions, etc.) qui se déroulent à ${location} ${dateClause}.`;
 
     if (eventType) {
       prompt += ` Le type d'événement souhaité est "${eventType}".`;
@@ -85,10 +85,9 @@ serve(async (req) => {
     // Enhanced instructions for career events
     if (isCareerEvent) {
       prompt += ` Concentre-toi sur les forums emploi, job dating, salons de recrutement, conférences sur la carrière, et événements de formation.`;
-      prompt += ` Pour chaque événement, incluez dans la description les horaires, si l'inscription est requise, et les services utiles (ex: ateliers, stands, conférences).`;
     }
 
-    prompt += ` Fournis une liste de 5 à 10 événements pertinents avec leur nom, une courte description (incluant horaires, inscription, services si pertinents), la date, le lieu précis et si possible un lien. Réponds en format JSON, comme un tableau d'objets, par exemple: [{"name": "Nom de l'événement", "description": "Description courte incluant horaires, inscription, services si pertinents", "date": "Date", "location": "Lieu", "link": "URL"}]. Si aucun événement n'est trouvé, retourne un tableau vide.`;
+    prompt += ` Pour chaque événement, indique : le nom de l’événement, une description détaillée (incluant le type d'événement, le secteur ou domaine, si c’est gratuit, payant ou sur invitation, la date et les horaires précis, et toute autre information pertinente comme l'inscription ou les services), le lieu exact et si possible un lien ou une source officielle pour obtenir plus d’informations. Réponds en format JSON, comme un tableau d'objets, par exemple: [{"name": "Nom de l'événement", "description": "Description détaillée incluant type, secteur, coût, date/horaires, etc.", "date": "Date", "location": "Lieu exact", "link": "URL ou source"}]. Si aucun événement n'est trouvé, retourne un tableau vide.`;
 
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
