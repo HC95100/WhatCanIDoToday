@@ -6,8 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, HeartCrack, ArrowLeft } from "lucide-react";
-import { MadeWithDyad } from '@/components/made-with-dyad';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer'; // Import the new Footer
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -140,7 +140,7 @@ const Favorites = () => {
           </div>
         )}
       </main>
-      <MadeWithDyad />
+      <Footer /> {/* Add the Footer here */}
     </div>
   );
 };

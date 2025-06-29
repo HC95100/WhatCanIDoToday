@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MadeWithDyad } from '@/components/made-with-dyad';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer'; // Import the new Footer
 
 const Dashboard = () => {
   const { user, loading } = useSession();
@@ -51,7 +51,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </main>
-      <MadeWithDyad />
+      <Footer /> {/* Add the Footer here */}
     </div>
   );
 };

@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import Header from "@/components/Header";
 import SearchForm from "@/components/SearchForm";
 import EventResults from "@/components/EventResults";
-import FAQSection from "@/components/FAQSection"; // Import the new FAQSection
+import FAQSection from "@/components/FAQSection";
+import Footer from "@/components/Footer"; // Import the new Footer
 
 interface EventResult {
   name: string;
@@ -30,9 +30,9 @@ const Index = () => {
           onErrorChange={setError}
         />
         <EventResults events={events} loading={loading} error={error} />
-        <FAQSection /> {/* Add the FAQSection here */}
+        <FAQSection />
       </main>
-      <MadeWithDyad />
+      <Footer /> {/* Add the Footer here */}
     </div>
   );
 };
