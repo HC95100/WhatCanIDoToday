@@ -41,6 +41,11 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
   const [cost, setCost] = React.useState<string>("any");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
+  // New states to control popover/select open status
+  const [isStartDatePickerOpen, setIsStartDatePickerOpen] = React.useState(false);
+  const [isEndDatePickerOpen, setIsEndDatePickerOpen] = React.useState(false);
+  const [isEventTypeSelectOpen, setIsEventTypeSelectOpen] = React.useState(false);
+
   const handleSearch = async () => {
     setIsLoading(true);
     onLoadingChange(true);
@@ -105,7 +110,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label htmlFor="startDate">Date de début</Label>
-            <Popover>
+            <Popover open={isStartDatePickerOpen} onOpenChange={setIsStartDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -122,15 +127,17 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
                 <Calendar
                   mode="single"
                   selected={startDate}
-                  onSelect={setStartDate}
-                  // Removed initialFocus prop
+                  onSelect={(date) => {
+                    setStartDate(date);
+                    setIsStartDatePickerOpen(false); // Close after selection
+                  }}
                 />
               </PopoverContent>
             </Popover>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="endDate">Date de fin (optionnel)</Label>
-            <Popover>
+            <Popover open={isEndDatePickerOpen} onOpenChange={setIsEndDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -147,8 +154,10 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
                 <Calendar
                   mode="single"
                   selected={endDate}
-                  onSelect={setEndDate}
-                  // Removed initialFocus prop
+                  onSelect={(date) => {
+                    setEndDate(date);
+                    setIsEndDatePickerOpen(false); // Close after selection
+                  }}
                 />
               </PopoverContent>
             </Popover>
@@ -157,7 +166,15 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
 
         <div className="grid gap-2">
           <Label htmlFor="eventType">Type d'événement</Label>
-          <Select value={eventType} onValueChange={setEventType}>
+          <Select
+            value={eventType}
+            onValueChange={(value) => {
+              setEventType(value);
+              setIsEventTypeSelectOpen(false); // Close after selection
+            }}
+            open={isEventTypeSelectOpen}
+            onOpenChange={setIsEventTypeSelectOpen}
+          >
             <SelectTrigger id="eventType">
               <SelectValue placeholder="Sélectionnez un type" />
             </SelectTrigger>
