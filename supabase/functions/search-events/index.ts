@@ -24,9 +24,10 @@ serve(async (req) => {
 
     let dateClause = "";
     let isOngoingActivity = false;
+    let isCareerEvent = false;
 
     const ongoingKeywords = ["plein air", "randonnée", "visite", "parc", "musée", "galerie", "activité continue", "toute l'année", "loisir", "détente", "balade", "circuit", "site touristique", "attraction", "exposition permanente"];
-    const careerKeywords = ["emploi", "alternance", "stage", "entrepreneuriat", "job dating", "conférence", "salon", "forum", "recrutement", "carrière", "formation"];
+    const careerKeywords = ["emploi", "alternance", "stage", "entrepreneuriat", "job dating", "conférence", "salon", "forum", "recrutement", "carrière", "formation", "métiers"];
 
     const lowerCaseEventType = eventType ? eventType.toLowerCase() : '';
     const lowerCaseOtherDetails = otherDetails ? otherDetails.toLowerCase() : '';
@@ -36,9 +37,13 @@ serve(async (req) => {
       isOngoingActivity = true;
     }
 
+    // Check for career events
+    if (careerKeywords.some(keyword => lowerCaseEventType.includes(keyword) || lowerCaseOtherDetails.includes(keyword))) {
+      isCareerEvent = true;
+    }
+
     if (isOngoingActivity) {
       dateClause = `qui sont disponibles toute l'année ou sur une longue période`;
-      // If it's an ongoing activity, we might still want to filter by date if provided, but emphasize year-round
       if (startDate && startDate !== "any" && endDate && endDate !== "any") {
         dateClause += ` et spécifiquement pertinents pour la période du ${startDate} au ${endDate}`;
       } else if (startDate && startDate !== "any") {
@@ -47,7 +52,6 @@ serve(async (req) => {
         dateClause += ` et pertinents jusqu'au ${endDate}`;
       }
     } else {
-      // Standard date clause for specific events
       if (startDate && startDate !== "any" && endDate && endDate !== "any") {
         dateClause = `pour la période du ${startDate} au ${endDate}`;
       } else if (startDate && startDate !== "any") {
@@ -55,13 +59,19 @@ serve(async (req) => {
       } else if (endDate && endDate !== "any") {
         dateClause = `jusqu'au ${endDate}`;
       } else {
-        dateClause = `pour n'importe quelle date`;
+        // If no specific dates, but a month is mentioned in otherDetails, try to infer
+        const monthMatch = lowerCaseOtherDetails.match(/(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)/);
+        if (monthMatch) {
+          const currentYear = new Date().getFullYear();
+          dateClause = `durant le mois de ${monthMatch[0]} ${currentYear}`;
+        } else {
+          dateClause = `pour n'importe quelle date`;
+        }
       }
     }
 
     let prompt = `Trouve une liste de 5 à 10 événements ou activités à faire à ${location} ${dateClause}.`;
 
-    // Add event type and other details
     if (eventType) {
       prompt += ` Le type d'événement souhaité est "${eventType}".`;
     }
@@ -72,8 +82,9 @@ serve(async (req) => {
       prompt += ` Autres précisions: "${otherDetails}".`;
     }
 
-    // Add specific instructions for career events if keywords are present
-    if (careerKeywords.some(keyword => lowerCaseEventType.includes(keyword) || lowerCaseOtherDetails.includes(keyword))) {
+    // Enhanced instructions for career events
+    if (isCareerEvent) {
+      prompt += ` Concentre-toi sur les forums emploi, job dating, salons de recrutement, conférences sur la carrière, et événements de formation.`;
       prompt += ` Pour chaque événement, incluez dans la description les horaires, si l'inscription est requise, et les services utiles (ex: ateliers, stands, conférences).`;
     }
 
@@ -104,28 +115,26 @@ serve(async (req) => {
     const geminiData = await geminiResponse.json();
     const textResponse = geminiData.candidates[0]?.content?.parts[0]?.text;
 
-    // Attempt to parse the text response as JSON
     let events = [];
     try {
-      // Extract content between ```json\n and ```
+      // First, try to parse the entire response directly
+      events = JSON.parse(textResponse);
+    } catch (parseErrorDirect) {
+      // If direct parsing fails, try to extract JSON from a markdown block
       const jsonMatch = textResponse.match(/```json\n([\s\S]*?)\n```/);
-      let jsonString = textResponse;
-
       if (jsonMatch && jsonMatch[1]) {
-        jsonString = jsonMatch[1].trim();
+        try {
+          events = JSON.parse(jsonMatch[1].trim());
+        } catch (parseErrorMarkdown) {
+          console.error('Failed to parse Gemini response from markdown block:', parseErrorMarkdown, 'Raw text:', textResponse);
+          // Fallback to empty array if parsing from markdown also fails
+          events = [];
+        }
       } else {
-        // If no markdown block is found, assume the entire response is JSON or needs trimming
-        jsonString = textResponse.trim();
+        console.error('Failed to parse Gemini response (no JSON or markdown block found):', parseErrorDirect, 'Raw text:', textResponse);
+        // Fallback to empty array if no JSON or markdown block is found
+        events = [];
       }
-
-      events = JSON.parse(jsonString);
-    } catch (parseError) {
-      console.error('Failed to parse Gemini response as JSON:', parseError, 'Raw text:', textResponse);
-      // If parsing fails, return a generic error or the raw text
-      return new Response(JSON.stringify({ error: 'Gemini returned an unparseable response.', raw: textResponse }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      });
     }
 
     return new Response(JSON.stringify(events), {
