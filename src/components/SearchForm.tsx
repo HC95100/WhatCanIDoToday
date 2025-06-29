@@ -108,7 +108,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  id="startDate" {/* Ajout de l'ID ici */}
+                  id="startDate"
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal",
@@ -133,7 +133,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  id="endDate" {/* Ajout de l'ID ici */}
+                  id="endDate"
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal",
@@ -161,7 +161,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
             value={eventType}
             onValueChange={setEventType}
           >
-            <SelectTrigger id="eventType"> {/* Ajout de l'ID ici */}
+            <SelectTrigger id="eventType">
               <SelectValue placeholder="Sélectionnez un type" />
             </SelectTrigger>
             <SelectContent>
