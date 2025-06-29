@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { location, date, eventType, cost } = await req.json();
+    const { location, startDate, endDate, eventType, cost } = await req.json();
 
     // Initialize Supabase client for auth (if needed, though not directly used for Gemini here)
     const supabaseClient = createClient(
@@ -35,8 +35,19 @@ serve(async (req) => {
       });
     }
 
-    // Construct the prompt for Gemini
-    const prompt = `Trouve des événements ou activités à faire à ${location} pour la date du ${date} (ou autour de cette date si non spécifiée). Le type d'événement souhaité est "${eventType}" et le coût est "${cost}". Fournis une liste de 3-5 événements pertinents avec leur nom, une courte description, la date, le lieu précis et si possible un lien. Réponds en format JSON, comme un tableau d'objets, par exemple: [{"name": "Nom de l'événement", "description": "Description courte", "date": "Date", "location": "Lieu", "link": "URL"}]. Si aucun événement n'est trouvé, retourne un tableau vide.`;
+    // Construct the prompt for Gemini based on date range
+    let dateClause = "";
+    if (startDate && startDate !== "any" && endDate && endDate !== "any") {
+      dateClause = `pour la période du ${startDate} au ${endDate}`;
+    } else if (startDate && startDate !== "any") {
+      dateClause = `à partir du ${startDate}`;
+    } else if (endDate && endDate !== "any") {
+      dateClause = `jusqu'au ${endDate}`;
+    } else {
+      dateClause = `pour n'importe quelle date`;
+    }
+
+    const prompt = `Trouve des événements ou activités à faire à ${location} ${dateClause}. Le type d'événement souhaité est "${eventType}" et le coût est "${cost}". Fournis une liste de 3-5 événements pertinents avec leur nom, une courte description, la date, le lieu précis et si possible un lien. Réponds en format JSON, comme un tableau d'objets, par exemple: [{"name": "Nom de l'événement", "description": "Description courte", "date": "Date", "location": "Lieu", "link": "URL"}]. Si aucun événement n'est trouvé, retourne un tableau vide.`;
 
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
