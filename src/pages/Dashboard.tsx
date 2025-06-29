@@ -48,18 +48,15 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center">
-        <Card className="w-full max-w-lg shadow-lg text-center mb-8"> {/* Changed max-w-3xl to max-w-lg */}
+        <Card className="w-full max-w-lg shadow-lg text-center mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl">Bienvenue, {user.email} !</CardTitle> {/* Changed text-3xl to text-2xl */}
+            <CardTitle className="text-2xl">Bienvenue, {user.email} !</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
             <p className="text-gray-700 dark:text-gray-300">
               Ceci est votre tableau de bord. Ici, vous pourrez gérer vos préférences, vos recherches récentes et vos événements enregistrés.
             </p>
-            <div className="flex justify-center gap-4 mt-4">
-              <Button onClick={() => navigate('/favorites')}>Mes Favoris</Button>
-              <Button variant="outline" onClick={handleLogout}>Déconnexion</Button>
-            </div>
+            {/* Removed the buttons from here as they are in the Header */}
           </CardContent>
         </Card>
 
