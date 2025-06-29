@@ -17,8 +17,8 @@ const Header = () => {
 
   return (
     <header className="w-full py-6 bg-primary text-primary-foreground shadow-md">
-      <div className="container mx-auto px-4 flex items-center"> {/* Changed flex-col sm:flex-row justify-between to flex items-center */}
-        <div className="flex-1 text-center"> {/* Added flex-1, removed sm:text-left, removed flex-grow */}
+      <div className="container mx-auto px-4 flex items-center">
+        <div className="flex-1 text-center">
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
             WhatCanIDoToday.com
           </h1>
@@ -26,10 +26,8 @@ const Header = () => {
             Découvrez quoi faire aujourd'hui (ou un autre jour) !
           </p>
         </div>
-        <div className="flex items-center gap-2 ml-auto"> {/* Added ml-auto to push buttons to the right */}
-          {loading ? (
-            <Button disabled>Chargement...</Button>
-          ) : user ? (
+        <div className="flex items-center gap-2 ml-auto">
+          {user ? ( // Si l'utilisateur est connecté, affiche les boutons "Mes Favoris" et "Déconnexion"
             <>
               <Button onClick={() => navigate('/favorites')} variant="secondary">
                 Mes Favoris
@@ -38,7 +36,7 @@ const Header = () => {
                 Déconnexion
               </Button>
             </>
-          ) : (
+          ) : ( // Sinon, affiche toujours le bouton "Se connecter"
             <Button onClick={() => navigate('/login')}>
               Se connecter
             </Button>
