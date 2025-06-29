@@ -3,13 +3,24 @@
 import React from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button"; // Import Button
+import { ArrowLeft } from "lucide-react"; // Import ArrowLeft icon
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const GestionCookies = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-8 text-center">Politique de Gestion des Cookies</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-center flex-grow">Politique de Gestion des Cookies</h1>
+          <Button onClick={() => navigate('/')} variant="outline" className="flex items-center">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Retour à la recherche
+          </Button>
+        </div>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Qu'est-ce qu'un cookie ?</h2>
