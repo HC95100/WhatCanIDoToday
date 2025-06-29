@@ -41,7 +41,7 @@ const Header = () => {
               <Button onClick={() => navigate('/login')} variant="secondary">
                 S'inscrire
               </Button>
-              <Button onClick={() => navigate('/login')}>
+              <Button onClick={() => navigate('/login')} variant="secondary">
                 Se connecter
               </Button>
             </>
