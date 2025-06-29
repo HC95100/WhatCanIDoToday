@@ -49,7 +49,7 @@ const SignUp = () => {
                 },
               ],
             }}
-            view="sign_up" // Définit explicitement la vue sur 'sign_up'
+            view="sign_up" // Ceci force la vue d'inscription
           />
           <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
             Vous avez déjà un compte ?{' '}
