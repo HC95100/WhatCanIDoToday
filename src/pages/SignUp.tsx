@@ -12,7 +12,7 @@ const SignUp = () => {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl">Créez votre compte</CardTitle>
-          <CardDescription>Inscrivez-vous pour découvrir les meilleurs événements !</CardDescription>
+          <CardDescription>Bienvenue ! Connectez-vous pour avoir accès à toutes les fonctionnalités.</CardDescription>
         </CardHeader>
         <CardContent>
           <Auth
