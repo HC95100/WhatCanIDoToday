@@ -38,7 +38,7 @@ const Header = () => {
             </>
           ) : ( // Sinon, affiche les boutons "S'inscrire" et "Se connecter"
             <>
-              <Button onClick={() => navigate('/login')} variant="secondary">
+              <Button onClick={() => navigate('/signup')} variant="secondary">
                 S'inscrire
               </Button>
               <Button onClick={() => navigate('/login')} variant="secondary">
