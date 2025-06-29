@@ -50,7 +50,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8"> {/* Changed to 3 columns */}
           {/* Logo et description */}
           <div className="col-span-1">
             <h3 className="text-xl font-bold mb-4">WhatCanIDoToday.com</h3>
@@ -82,33 +82,6 @@ const Footer = () => {
               <li>
                 <a href="/cookies" className="text-gray-400 hover:text-white transition-colors text-sm">
                   Gestion des cookies
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Support et aide */}
-          <div>
-            <h4 className="font-semibold mb-4 text-gray-200">Support</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="/aide" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  Centre d'aide
-                </a>
-              </li>
-              <li>
-                <a href="/contact" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  Nous contacter
-                </a>
-              </li>
-              <li>
-                <a href="/a-propos" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  À propos de nous
-                </a>
-              </li>
-              <li>
-                <a href="/plan-du-site" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  Plan du site
                 </a>
               </li>
             </ul>
