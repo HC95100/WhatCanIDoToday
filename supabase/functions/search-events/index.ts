@@ -12,23 +12,9 @@ serve(async (req) => {
   }
 
   try {
-    // Destructure the new 'otherDetails' parameter from the request body
     const { location, startDate, endDate, eventType, cost, otherDetails } = await req.json();
 
-    // Initialize Supabase client for auth (if needed, though not directly used for Gemini here)
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
-    );
-
-    // Get Gemini API Key from environment variables (Supabase Secrets)
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-
     if (!geminiApiKey) {
       return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not set in Supabase secrets.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -36,20 +22,46 @@ serve(async (req) => {
       });
     }
 
-    // Construct the prompt for Gemini based on date range
     let dateClause = "";
-    if (startDate && startDate !== "any" && endDate && endDate !== "any") {
-      dateClause = `pour la période du ${startDate} au ${endDate}`;
-    } else if (startDate && startDate !== "any") {
-      dateClause = `à partir du ${startDate}`;
-    } else if (endDate && endDate !== "any") {
-      dateClause = `jusqu'au ${endDate}`;
-    } else {
-      dateClause = `pour n'importe quelle date`;
+    let isOngoingActivity = false;
+
+    const ongoingKeywords = ["plein air", "randonnée", "visite", "parc", "musée", "galerie", "activité continue", "toute l'année", "loisir", "détente", "balade", "circuit", "site touristique", "attraction", "exposition permanente"];
+    const careerKeywords = ["emploi", "alternance", "stage", "entrepreneuriat", "job dating", "conférence", "salon", "forum", "recrutement", "carrière", "formation"];
+
+    const lowerCaseEventType = eventType ? eventType.toLowerCase() : '';
+    const lowerCaseOtherDetails = otherDetails ? otherDetails.toLowerCase() : '';
+
+    // Check for ongoing activities
+    if (ongoingKeywords.some(keyword => lowerCaseEventType.includes(keyword) || lowerCaseOtherDetails.includes(keyword))) {
+      isOngoingActivity = true;
     }
 
-    // Build the prompt dynamically to include eventType and otherDetails
-    let prompt = `Trouve des événements ou activités à faire à ${location} ${dateClause}.`;
+    if (isOngoingActivity) {
+      dateClause = `qui sont disponibles toute l'année ou sur une longue période`;
+      // If it's an ongoing activity, we might still want to filter by date if provided, but emphasize year-round
+      if (startDate && startDate !== "any" && endDate && endDate !== "any") {
+        dateClause += ` et spécifiquement pertinents pour la période du ${startDate} au ${endDate}`;
+      } else if (startDate && startDate !== "any") {
+        dateClause += ` et pertinents à partir du ${startDate}`;
+      } else if (endDate && endDate !== "any") {
+        dateClause += ` et pertinents jusqu'au ${endDate}`;
+      }
+    } else {
+      // Standard date clause for specific events
+      if (startDate && startDate !== "any" && endDate && endDate !== "any") {
+        dateClause = `pour la période du ${startDate} au ${endDate}`;
+      } else if (startDate && startDate !== "any") {
+        dateClause = `à partir du ${startDate}`;
+      } else if (endDate && endDate !== "any") {
+        dateClause = `jusqu'au ${endDate}`;
+      } else {
+        dateClause = `pour n'importe quelle date`;
+      }
+    }
+
+    let prompt = `Trouve une liste de 5 à 10 événements ou activités à faire à ${location} ${dateClause}.`;
+
+    // Add event type and other details
     if (eventType) {
       prompt += ` Le type d'événement souhaité est "${eventType}".`;
     }
@@ -59,7 +71,13 @@ serve(async (req) => {
     if (otherDetails) {
       prompt += ` Autres précisions: "${otherDetails}".`;
     }
-    prompt += ` Fournis une liste de 3-5 événements pertinents avec leur nom, une courte description, la date, le lieu précis et si possible un lien. Réponds en format JSON, comme un tableau d'objets, par exemple: [{"name": "Nom de l'événement", "description": "Description courte", "date": "Date", "location": "Lieu", "link": "URL"}]. Si aucun événement n'est trouvé, retourne un tableau vide.`;
+
+    // Add specific instructions for career events if keywords are present
+    if (careerKeywords.some(keyword => lowerCaseEventType.includes(keyword) || lowerCaseOtherDetails.includes(keyword))) {
+      prompt += ` Pour chaque événement, incluez dans la description les horaires, si l'inscription est requise, et les services utiles (ex: ateliers, stands, conférences).`;
+    }
+
+    prompt += ` Fournis une liste de 5 à 10 événements pertinents avec leur nom, une courte description (incluant horaires, inscription, services si pertinents), la date, le lieu précis et si possible un lien. Réponds en format JSON, comme un tableau d'objets, par exemple: [{"name": "Nom de l'événement", "description": "Description courte incluant horaires, inscription, services si pertinents", "date": "Date", "location": "Lieu", "link": "URL"}]. Si aucun événement n'est trouvé, retourne un tableau vide.`;
 
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
