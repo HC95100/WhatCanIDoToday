@@ -16,42 +16,42 @@ const SessionContext = createContext<SessionContextType | undefined>(undefined);
 export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false); // Changed initial loading state to false
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       setSession(currentSession);
       setUser(currentSession?.user || null);
-      // No setLoading(false) here, as it's handled by the initial check or subsequent updates
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         if (window.location.pathname === '/login') {
           navigate('/dashboard');
         }
       } else if (event === 'SIGNED_OUT') {
+        // Redirige vers la page d'accueil si l'utilisateur est déconnecté et sur une page protégée
         if (window.location.pathname === '/dashboard' || window.location.pathname === '/favorites') {
-          navigate('/login');
+          navigate('/');
         }
       }
     });
 
     // Initial session check
     const checkInitialSession = async () => {
-      setLoading(true); // Set loading to true only during this fetch
+      setLoading(true);
       const { data: { session: initialSession } } = await supabase.auth.getSession();
       setSession(initialSession);
       setUser(initialSession?.user || null);
-      setLoading(false); // Set loading to false after fetch completes
+      setLoading(false);
 
       // Handle redirects based on initial session
       if (!initialSession && (window.location.pathname === '/dashboard' || window.location.pathname === '/favorites')) {
-        navigate('/login');
+        navigate('/'); // Redirige vers la page d'accueil
       } else if (initialSession && window.location.pathname === '/login') {
         navigate('/dashboard');
       }
     };
 
-    checkInitialSession(); // Call the async function
+    checkInitialSession();
 
     return () => subscription.unsubscribe();
   }, [navigate]);

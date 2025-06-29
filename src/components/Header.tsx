@@ -12,7 +12,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/login');
+    navigate('/'); // Redirige vers la page d'accueil après déconnexion
   };
 
   return (
