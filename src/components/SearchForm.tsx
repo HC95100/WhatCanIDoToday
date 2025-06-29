@@ -41,7 +41,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
   const [cost, setCost] = React.useState<string>("any");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  // New states to control popover/select open status
+  // States to control popover/select open status
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = React.useState(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = React.useState(false);
   const [isEventTypeSelectOpen, setIsEventTypeSelectOpen] = React.useState(false);
@@ -127,10 +127,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
                 <Calendar
                   mode="single"
                   selected={startDate}
-                  onSelect={(date) => {
-                    setStartDate(date);
-                    setIsStartDatePickerOpen(false); // Close after selection
-                  }}
+                  onSelect={setStartDate} // Removed explicit setIsStartDatePickerOpen(false)
                 />
               </PopoverContent>
             </Popover>
@@ -154,10 +151,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
                 <Calendar
                   mode="single"
                   selected={endDate}
-                  onSelect={(date) => {
-                    setEndDate(date);
-                    setIsEndDatePickerOpen(false); // Close after selection
-                  }}
+                  onSelect={setEndDate} // Removed explicit setIsEndDatePickerOpen(false)
                 />
               </PopoverContent>
             </Popover>
@@ -168,10 +162,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
           <Label htmlFor="eventType">Type d'événement</Label>
           <Select
             value={eventType}
-            onValueChange={(value) => {
-              setEventType(value);
-              setIsEventTypeSelectOpen(false); // Close after selection
-            }}
+            onValueChange={setEventType} // Removed explicit setIsEventTypeSelectOpen(false)
             open={isEventTypeSelectOpen}
             onOpenChange={setIsEventTypeSelectOpen}
           >
