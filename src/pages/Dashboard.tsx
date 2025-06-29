@@ -48,9 +48,9 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center">
-        <Card className="w-full max-w-3xl shadow-lg text-center mb-8">
+        <Card className="w-full max-w-lg shadow-lg text-center mb-8"> {/* Changed max-w-3xl to max-w-lg */}
           <CardHeader>
-            <CardTitle className="text-3xl">Bienvenue, {user.email} !</CardTitle>
+            <CardTitle className="text-2xl">Bienvenue, {user.email} !</CardTitle> {/* Changed text-3xl to text-2xl */}
           </CardHeader>
           <CardContent className="grid gap-4">
             <p className="text-gray-700 dark:text-gray-300">
