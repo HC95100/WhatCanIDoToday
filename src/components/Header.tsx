@@ -17,8 +17,9 @@ const Header = () => {
 
   return (
     <header className="w-full py-6 bg-primary text-primary-foreground shadow-md">
-      <div className="container mx-auto px-4 flex items-center">
-        <div className="flex-1 text-center">
+      <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center sm:justify-between">
+        {/* Title and Slogan */}
+        <div className="text-center mb-4 sm:mb-0 sm:flex-1">
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
             WhatCanIDoToday.com
           </h1>
@@ -26,22 +27,23 @@ const Header = () => {
             Découvrez quoi faire aujourd'hui (ou un autre jour) !
           </p>
         </div>
-        <div className="flex items-center gap-2 ml-auto">
+        {/* Buttons */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           {user ? ( // Si l'utilisateur est connecté, affiche les boutons "Mes Favoris" et "Déconnexion"
             <>
-              <Button onClick={() => navigate('/favorites')} variant="secondary">
+              <Button onClick={() => navigate('/favorites')} variant="secondary" className="whitespace-nowrap">
                 Mes Favoris
               </Button>
-              <Button onClick={handleLogout} variant="secondary">
+              <Button onClick={handleLogout} variant="secondary" className="whitespace-nowrap">
                 Déconnexion
               </Button>
             </>
           ) : ( // Sinon, affiche les boutons "S'inscrire" et "Se connecter"
             <>
-              <Button onClick={() => navigate('/signup')} variant="secondary">
+              <Button onClick={() => navigate('/signup')} variant="secondary" className="whitespace-nowrap">
                 S'inscrire
               </Button>
-              <Button onClick={() => navigate('/login')} variant="secondary">
+              <Button onClick={() => navigate('/login')} variant="secondary" className="whitespace-nowrap">
                 Se connecter
               </Button>
             </>
