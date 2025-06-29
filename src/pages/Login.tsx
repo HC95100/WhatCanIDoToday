@@ -49,6 +49,7 @@ const Login = () => {
                 },
               ],
             }}
+            defaultView="sign_up" // Ceci affichera la vue d'inscription par défaut
           />
         </CardContent>
       </Card>
