@@ -36,10 +36,15 @@ const Header = () => {
                 Déconnexion
               </Button>
             </>
-          ) : ( // Sinon, affiche toujours le bouton "Se connecter"
-            <Button onClick={() => navigate('/login')}>
-              Se connecter
-            </Button>
+          ) : ( // Sinon, affiche les boutons "S'inscrire" et "Se connecter"
+            <>
+              <Button onClick={() => navigate('/login')} variant="secondary">
+                S'inscrire
+              </Button>
+              <Button onClick={() => navigate('/login')}>
+                Se connecter
+              </Button>
+            </>
           )}
         </div>
       </div>
