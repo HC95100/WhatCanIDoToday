@@ -17,8 +17,8 @@ const Header = () => {
 
   return (
     <header className="w-full py-6 bg-primary text-primary-foreground shadow-md">
-      <div className="container mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
-        <div className="text-center sm:text-left flex-grow"> {/* Added flex-grow and adjusted text alignment */}
+      <div className="container mx-auto px-4 flex items-center"> {/* Changed flex-col sm:flex-row justify-between to flex items-center */}
+        <div className="flex-1 text-center"> {/* Added flex-1, removed sm:text-left, removed flex-grow */}
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
             WhatCanIDoToday.com
           </h1>
@@ -26,7 +26,7 @@ const Header = () => {
             Découvrez quoi faire aujourd'hui (ou un autre jour) !
           </p>
         </div>
-        <div className="flex items-center gap-2 mt-4 sm:mt-0"> {/* Added margin top for small screens */}
+        <div className="flex items-center gap-2 ml-auto"> {/* Added ml-auto to push buttons to the right */}
           {loading ? (
             <Button disabled>Chargement...</Button>
           ) : user ? (

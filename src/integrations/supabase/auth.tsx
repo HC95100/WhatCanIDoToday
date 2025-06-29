@@ -16,22 +16,19 @@ const SessionContext = createContext<SessionContextType | undefined>(undefined);
 export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changed initial loading state to false
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       setSession(currentSession);
       setUser(currentSession?.user || null);
-      setLoading(false);
-
+      // No setLoading(false) here, as it's handled by the initial check or subsequent updates
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        // Redirect authenticated users from login page to dashboard
         if (window.location.pathname === '/login') {
           navigate('/dashboard');
         }
       } else if (event === 'SIGNED_OUT') {
-        // Redirect unauthenticated users from protected routes to login
         if (window.location.pathname === '/dashboard' || window.location.pathname === '/favorites') {
           navigate('/login');
         }
@@ -39,16 +36,22 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
     });
 
     // Initial session check
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+    const checkInitialSession = async () => {
+      setLoading(true); // Set loading to true only during this fetch
+      const { data: { session: initialSession } } = await supabase.auth.getSession();
       setSession(initialSession);
       setUser(initialSession?.user || null);
-      setLoading(false);
+      setLoading(false); // Set loading to false after fetch completes
+
+      // Handle redirects based on initial session
       if (!initialSession && (window.location.pathname === '/dashboard' || window.location.pathname === '/favorites')) {
         navigate('/login');
       } else if (initialSession && window.location.pathname === '/login') {
         navigate('/dashboard');
       }
-    });
+    };
+
+    checkInitialSession(); // Call the async function
 
     return () => subscription.unsubscribe();
   }, [navigate]);
