@@ -13,10 +13,8 @@ import { CalendarIcon, Search, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea"; // Import Textarea component
-
-// Removed eventTypes array as it's no longer needed for a free-text input
+import { toast } from "sonner"; // Re-import toast
+import { Textarea } from "@/components/ui/textarea";
 
 interface EventResult {
   name: string;
@@ -36,16 +34,16 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
   const [startDate, setStartDate] = React.useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
   const [location, setLocation] = React.useState<string>("");
-  const [eventType, setEventType] = React.useState<string>(""); // Now a free-text string
+  const [eventType, setEventType] = React.useState<string>("");
   const [cost, setCost] = React.useState<string>("any");
-  const [otherDetails, setOtherDetails] = React.useState<string>(""); // New state for other details
+  const [otherDetails, setOtherDetails] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const handleSearch = async () => {
     setIsLoading(true);
     onLoadingChange(true);
     onErrorChange(null);
-    onSearchResults([]); // Clear previous results
+    onSearchResults([]);
 
     try {
       const { data, error } = await supabase.functions.invoke('search-events', {
@@ -53,9 +51,9 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
           location,
           startDate: startDate ? format(startDate, "yyyy-MM-dd") : "any",
           endDate: endDate ? format(endDate, "yyyy-MM-dd") : "any",
-          eventType, // Pass the free-text event type
+          eventType,
           cost,
-          otherDetails, // Pass the new other details
+          otherDetails,
         },
       });
 
@@ -166,7 +164,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
           />
         </div>
 
-        {/* New field for other details */}
         <div className="grid gap-2">
           <Label htmlFor="otherDetails">Autres précisions (optionnel)</Label>
           <Textarea
@@ -174,7 +171,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
             placeholder="Ex: pour enfants, en plein air, avec restauration..."
             value={otherDetails}
             onChange={(e) => setOtherDetails(e.target.value)}
-            rows={3} // Adjust height as needed
+            rows={3}
           />
         </div>
 
