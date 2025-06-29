@@ -30,6 +30,25 @@ const Login = () => {
             }}
             theme="light" // Ou "dark" si vous avez un thème sombre
             redirectTo={window.location.origin + '/dashboard'} // Redirige après connexion
+            signUp={{
+              // Add custom fields for sign up
+              fields: [
+                {
+                  name: 'first_name',
+                  label: 'Prénom',
+                  type: 'text',
+                  placeholder: 'Votre prénom',
+                  required: true,
+                },
+                {
+                  name: 'last_name',
+                  label: 'Nom',
+                  type: 'text',
+                  placeholder: 'Votre nom',
+                  required: true,
+                },
+              ],
+            }}
           />
         </CardContent>
       </Card>
