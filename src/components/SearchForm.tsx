@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { useSession } from '@/integrations/supabase/auth'; // Import useSession
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 interface EventResult {
   name: string;
@@ -31,6 +33,9 @@ interface SearchFormProps {
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChange, onErrorChange }) => {
+  const { user } = useSession(); // Get user session
+  const navigate = useNavigate(); // Get navigate function
+
   const [startDate, setStartDate] = React.useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
   const [location, setLocation] = React.useState<string>("");
@@ -40,6 +45,12 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const handleSearch = async () => {
+    if (!user) {
+      toast.error("Veuillez vous connecter pour effectuer une recherche.");
+      navigate('/login');
+      return;
+    }
+
     setIsLoading(true);
     onLoadingChange(true);
     onErrorChange(null);
