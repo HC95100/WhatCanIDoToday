@@ -16,7 +16,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full py-6 bg-primary text-primary-foreground shadow-md">
+    <header className="w-full py-8 bg-primary text-primary-foreground shadow-md">
       <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center relative">
         {/* Title and Slogan - Centered absolutely on large screens, centered normally on small screens */}
         <div className="text-center mb-4 sm:mb-0 sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:w-auto">
