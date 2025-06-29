@@ -41,11 +41,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
   const [cost, setCost] = React.useState<string>("any");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  // Suppression des états explicites pour l'ouverture/fermeture des Popover et Select
-  // const [isStartDatePickerOpen, setIsStartDatePickerOpen] = React.useState(false);
-  // const [isEndDatePickerOpen, setIsEndDatePickerOpen] = React.useState(false);
-  // const [isEventTypeSelectOpen, setIsEventTypeSelectOpen] = React.useState(false);
-
   const handleSearch = async () => {
     setIsLoading(true);
     onLoadingChange(true);
@@ -110,9 +105,10 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label htmlFor="startDate">Date de début</Label>
-            <Popover> {/* Suppression de open et onOpenChange */}
+            <Popover>
               <PopoverTrigger asChild>
                 <Button
+                  id="startDate" {/* Ajout de l'ID ici */}
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal",
@@ -134,9 +130,10 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
           </div>
           <div className="grid gap-2">
             <Label htmlFor="endDate">Date de fin (optionnel)</Label>
-            <Popover> {/* Suppression de open et onOpenChange */}
+            <Popover>
               <PopoverTrigger asChild>
                 <Button
+                  id="endDate" {/* Ajout de l'ID ici */}
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal",
@@ -163,9 +160,8 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
           <Select
             value={eventType}
             onValueChange={setEventType}
-            // Suppression de open et onOpenChange
           >
-            <SelectTrigger id="eventType">
+            <SelectTrigger id="eventType"> {/* Ajout de l'ID ici */}
               <SelectValue placeholder="Sélectionnez un type" />
             </SelectTrigger>
             <SelectContent>
