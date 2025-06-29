@@ -160,7 +160,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
           <Label htmlFor="eventType">Type d'événement (ex: concert, exposition, sport...)</Label>
           <Input
             id="eventType"
-            placeholder="Ex: concert de rock, exposition d'art moderne"
+            placeholder="Ex: forum emploi, salon de l'auto"
             value={eventType}
             onChange={(e) => setEventType(e.target.value)}
           />
