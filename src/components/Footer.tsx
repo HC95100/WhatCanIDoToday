@@ -1,9 +1,52 @@
 "use client";
 
-import React from 'react';
-import { Facebook, Twitter, Instagram, Mail } from 'lucide-react';
+import React, { useState } from 'react';
+import { Linkedin, Mail } from 'lucide-react'; // Import Linkedin icon
+import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
+import { toast } from 'sonner'; // Import toast for notifications
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNewsletterSubscribe = async () => {
+    if (!email) {
+      toast.error("Veuillez entrer votre adresse e-mail.");
+      return;
+    }
+
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Veuillez entrer une adresse e-mail valide.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert([{ email: email }]);
+
+      if (error) {
+        console.error("Error subscribing to newsletter:", error);
+        if (error.code === '23505') { // Unique violation code
+          toast.info("Cette adresse e-mail est déjà inscrite à la newsletter.");
+        } else {
+          toast.error("Erreur lors de l'inscription à la newsletter. Veuillez réessayer.");
+        }
+      } else {
+        toast.success("Merci de vous être inscrit à notre newsletter !");
+        setEmail(''); // Clear the input
+      }
+    } catch (err) {
+      console.error("Unexpected error during newsletter subscription:", err);
+      toast.error("Une erreur inattendue est survenue.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -85,8 +128,15 @@ const Footer = () => {
                   type="email"
                   placeholder="Votre email"
                   className="flex-1 px-3 py-2 text-sm text-gray-900 rounded-l-md focus:outline-none"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
                 />
-                <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md transition-colors">
+                <button
+                  onClick={handleNewsletterSubscribe}
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md transition-colors"
+                  disabled={isSubmitting}
+                >
                   <Mail className="w-4 h-4" />
                 </button>
               </div>
@@ -96,14 +146,8 @@ const Footer = () => {
             <div>
               <p className="text-gray-400 text-sm mb-3">Suivez-nous</p>
               <div className="flex space-x-3">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Instagram className="w-5 h-5" />
+                <a href="https://www.linkedin.com/in/hamza-chohabi-b15a4b2a5" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                  <Linkedin className="w-5 h-5" />
                 </a>
               </div>
             </div>
