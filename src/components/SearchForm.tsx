@@ -123,7 +123,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
                   mode="single"
                   selected={startDate}
                   onSelect={setStartDate}
-                  initialFocus
+                  // Removed initialFocus prop
                 />
               </PopoverContent>
             </Popover>
@@ -148,7 +148,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchResults, onLoadingChang
                   mode="single"
                   selected={endDate}
                   onSelect={setEndDate}
-                  initialFocus
+                  // Removed initialFocus prop
                 />
               </PopoverContent>
             </Popover>
