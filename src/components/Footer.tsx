@@ -1,9 +1,45 @@
 "use client";
 
-import React from 'react';
-import { Facebook, Twitter, Instagram, Mail } from 'lucide-react';
+import React, { useState } from 'react';
+import { Linkedin, Mail } from 'lucide-react'; // Import Linkedin icon
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubscribe = async () => {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      toast.error("Veuillez entrer une adresse e-mail valide.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert({ email });
+
+      if (error) {
+        if (error.code === '23505') { // Unique violation error code
+          toast.info("Cette adresse e-mail est déjà abonnée.");
+        } else {
+          console.error("Error subscribing to newsletter:", error);
+          toast.error("Erreur lors de l'abonnement. Veuillez réessayer.");
+        }
+      } else {
+        toast.success("Merci de vous être abonné à notre newsletter !");
+        setEmail(''); // Clear the input field
+      }
+    } catch (err) {
+      console.error("Unexpected error during subscription:", err);
+      toast.error("Une erreur inattendue est survenue.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -85,8 +121,15 @@ const Footer = () => {
                   type="email"
                   placeholder="Votre email"
                   className="flex-1 px-3 py-2 text-sm text-gray-900 rounded-l-md focus:outline-none"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
                 />
-                <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md transition-colors">
+                <button
+                  onClick={handleSubscribe}
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md transition-colors"
+                  disabled={isLoading}
+                >
                   <Mail className="w-4 h-4" />
                 </button>
               </div>
@@ -96,14 +139,8 @@ const Footer = () => {
             <div>
               <p className="text-gray-400 text-sm mb-3">Suivez-nous</p>
               <div className="flex space-x-3">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Instagram className="w-5 h-5" />
+                <a href="https://www.linkedin.com/in/hamza-chohabi-b15a4b2a5" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                  <Linkedin className="w-5 h-5" />
                 </a>
               </div>
             </div>
