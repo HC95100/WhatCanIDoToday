@@ -32,7 +32,7 @@ const Header = () => {
               <Button onClick={() => navigate('/favorites')} variant="secondary">
                 Mes Favoris
               </Button>
-              <Button onClick={handleLogout} variant="outline">
+              <Button onClick={handleLogout} variant="secondary">
                 Déconnexion
               </Button>
             </>
